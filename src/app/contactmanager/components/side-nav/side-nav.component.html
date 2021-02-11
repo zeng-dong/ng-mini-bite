@@ -1,0 +1,186 @@
+<mat-sidenav-container
+  class="app-sidenav-container"
+  [class.dark-theme]="isDarkTheme"
+  [dir]="direction"
+>
+  <mat-sidenav
+    #sidenav
+    class="app-sidenav mat-elevation-z10"
+    [opened]="!isScreenSmall"
+    [mode]="isScreenSmall ? 'over' : 'side'"
+  >
+    <mat-toolbar color="primary">Contacts</mat-toolbar>
+
+    <mat-nav-list>
+      <mat-list-item *ngFor="let user of users | async">
+        <a matLine [routerLink]="['/contactmanager', user.id]">
+          <mat-icon svgIcon="{{ user.avatar }}"></mat-icon>
+          {{ user.name }}
+        </a>
+      </mat-list-item>
+    </mat-nav-list>
+
+    <hr />
+
+    <ng-container *ngFor="let mainItem of menu | keyvalue">
+      <button mat-menu-item [matMenuTriggerFor]="sub_menu">
+        {{ mainItem.key }}
+      </button>
+      <mat-menu #sub_menu="matMenu">
+        <button *ngFor="let subItem of mainItem.value" mat-menu-item>
+          {{ subItem }}
+        </button>
+      </mat-menu>
+    </ng-container>
+
+    <hr />
+    <mat-nav-list *ngFor="let mainItem of objectKeys(menu)">
+      <button mat-menu-item [matMenuTriggerFor]="sub_menu">
+        {{ mainItem }}
+      </button>
+      <mat-menu #sub_menu="matMenu">
+        <button *ngFor="let subItem of menu[mainItem]" mat-menu-item>
+          {{ subItem }}
+        </button>
+      </mat-menu>
+    </mat-nav-list>
+
+    <hr />
+    <button mat-button [matMenuTriggerFor]="animals">Animal index</button>
+    <ng-container>
+      <mat-menu #animals="matMenu">
+        <button mat-menu-item [matMenuTriggerFor]="vertebrates">
+          Vertebrates
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="invertebrates">
+          Invertebrates
+        </button>
+      </mat-menu>
+
+      <mat-menu #vertebrates="matMenu">
+        <button mat-menu-item [matMenuTriggerFor]="fish">Fishes</button>
+        <button mat-menu-item [matMenuTriggerFor]="amphibians">
+          Amphibians
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="reptiles">Reptiles</button>
+        <button mat-menu-item>Birds</button>
+        <button mat-menu-item>Mammals</button>
+      </mat-menu>
+
+      <mat-menu #invertebrates="matMenu">
+        <button mat-menu-item>Insects</button>
+        <button mat-menu-item>Molluscs</button>
+        <button mat-menu-item>Crustaceans</button>
+        <button mat-menu-item>Corals</button>
+        <button mat-menu-item>Arachnids</button>
+        <button mat-menu-item>Velvet worms</button>
+        <button mat-menu-item>Horseshoe crabs</button>
+      </mat-menu>
+
+      <mat-menu #fish="matMenu">
+        <button mat-menu-item>Baikal oilfish</button>
+        <button mat-menu-item>Bala shark</button>
+        <button mat-menu-item>Ballan wrasse</button>
+        <button mat-menu-item>Bamboo shark</button>
+        <button mat-menu-item>Banded killifish</button>
+      </mat-menu>
+
+      <mat-menu #amphibians="matMenu">
+        <button mat-menu-item>Sonoran desert toad</button>
+        <button mat-menu-item>Western toad</button>
+        <button mat-menu-item>Arroyo toad</button>
+        <button mat-menu-item>Yosemite toad</button>
+      </mat-menu>
+
+      <mat-menu #reptiles="matMenu">
+        <button mat-menu-item>Banded Day Gecko</button>
+        <button mat-menu-item>Banded Gila Monster</button>
+        <button mat-menu-item>Black Tree Monitor</button>
+        <button mat-menu-item>Blue Spiny Lizard</button>
+        <button mat-menu-item disabled>Velociraptor</button>
+      </mat-menu>
+    </ng-container>
+
+    <hr />
+    <div class="basic-container">
+      <span *ngFor="let item of navItems">
+        <!-- Handle branch node buttons here -->
+        <span *ngIf="item.children && item.children.length > 0">
+          <button
+            mat-raised-button
+            color="primary"
+            [matMenuTriggerFor]="childMenu"
+          >
+            {{ item.displayName }}
+            <mat-icon>expand_more</mat-icon>
+          </button>
+          <!-- <app-menu-item #menu [items]="item.children"></app-menu-item> -->
+
+          <mat-menu #childMenu="matMenu" [overlapTrigger]="false">
+            <span *ngFor="let child of item.children">
+              <!-- Handle branch node menu items -->
+              <span *ngIf="child.children && child.children.length > 0">
+                <button mat-menu-item color="primary">
+                  <mat-icon>{{ child.iconName }}</mat-icon>
+                  <span>{{ child.displayName }}</span>
+                </button>
+                <!-- <app-menu-item #menu [items]="child.children"></app-menu-item> -->
+
+                <mat-menu #childMenu="matMenu" [overlapTrigger]="false">
+                  <span *ngFor="let child of item.children">
+                    <!-- Handle branch node menu items -->
+                    <span *ngIf="child.children && child.children.length > 0">
+                      <button mat-menu-item color="primary">
+                        <mat-icon>{{ child.iconName }}</mat-icon>
+                        <span>{{ child.displayName }}</span>
+                      </button>
+                      <app-menu-item
+                        #menu
+                        [items]="child.children"
+                      ></app-menu-item>
+                    </span>
+                    <!-- Handle leaf node menu items -->
+                    <span
+                      *ngIf="!child.children || child.children.length === 0"
+                    >
+                      <button mat-menu-item [routerLink]="child.route">
+                        <mat-icon>{{ child.iconName }}</mat-icon>
+                        <span>{{ child.displayName }}</span>
+                      </button>
+                    </span>
+                  </span>
+                </mat-menu>
+              </span>
+              <!-- Handle leaf node menu items -->
+              <span *ngIf="!child.children || child.children.length === 0">
+                <button mat-menu-item [routerLink]="child.route">
+                  <mat-icon>{{ child.iconName }}</mat-icon>
+                  <span>{{ child.displayName }}</span>
+                </button>
+              </span>
+            </span>
+          </mat-menu>
+        </span>
+        <!-- Leaf node buttons here -->
+        <span *ngIf="!item.children || item.children.length === 0">
+          <button mat-button color="primary" [routerLink]="item.route">
+            {{ item.displayName }}
+          </button>
+        </span>
+      </span>
+    </div>
+  </mat-sidenav>
+
+  <div class="app-sidenav-content">
+    <app-toolbar
+      (toggleSidenav)="sidenav.toggle()"
+      (toggleTheme)="toggleTheme()"
+      (toggleDirection)="toggleDirection()"
+    >
+    </app-toolbar>
+
+    <div class="wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</mat-sidenav-container>
